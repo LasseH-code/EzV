@@ -19,7 +19,7 @@ If you want to use SDL you have to use the compile definition EZV_SUPPORT_SDL.
 **DISCLAIMER:** EzV does **NOT** keep the window open on its own.
 ## Furthermore
 There are 3 Preprocessordefinitions to be aware of.
-1. EZV_INFO_OUTPUT (for more verbose console output for debugging)
+1. EZV_INFO_OUTPUT (for more verbose console output for debugging purposes)
 2. LHG_VERBOSE (to make the logger display INFO logs -> required for EZV_INFO_OUTPUT)
 3. EZV_SUPPORT_SDL (activates the SDL integration in EzV)
 # FAQ
