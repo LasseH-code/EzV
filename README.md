@@ -5,7 +5,9 @@ Also the codebase isn't very pretty nor mainainable at the mo. Will fix in the f
 ## What you'll need to run this
 First off it was made for Windows 10/11. Not tested for Linux/Mac.  
 Second off I use my trusty logger in this, which is integrated in the library. I have written my own tiny logger, as a mod of Pilzschaf's Logger with some extra features. Heres the repo: https://github.com/LasseH-code/Lhg
-Also for SDL you need that aswell. More infos on that in the FAQ.
+If you want to use SDL, you need to add it as a library in your project, same with vulkan, though thats nessescary.  
+A already set up example: https://github.com/Luh-code/vulkan_tutorial.  
+More infos on that in the FAQ.
 ## 4 Steps to a Window, a VulkanInstance, and a swapchain
 Right now EzV natively only supports SDL. Support for GLFW will follow in the future.
 You can however still use GLFW, its just not handled by EzV.
