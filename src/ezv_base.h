@@ -14,7 +14,7 @@
 #include <SDL2/SDL_vulkan.h>
 #endif // EZV_SUPPORT_SDL
 
-#define ASSERT_VULKAN(val) if(val != VK_SUCCESS) {lhg::LOG_CRIT("An error occured"); assert(false);}
+#define ASSERT_VULKAN(val) if(val != VK_SUCCESS) {LOG_CRIT("An error occured"); assert(false);}
 #ifndef VK
 #define VK(f) f
 #endif // VK
@@ -74,6 +74,11 @@ namespace ezv
         uint32_t familyIndex;
     };
     
+    struct VulkanRenderpass
+    {
+        VkRenderPass renderpass;
+    };
+
     struct VulkanSwapchain {
         VkSwapchainKHR swapchain;
         VkSurfaceKHR surface;
@@ -97,7 +102,7 @@ namespace ezv
         public:
         VulkanContext* context = 0;
         VulkanSwapchain* swapchain = 0;
-        
+        VulkanRenderpass* renderpass = 0;
         
         public:
         EzV(EzVCreateInfo* creationStruct);
@@ -108,7 +113,7 @@ namespace ezv
         bool selectPhysicalDevice();
         bool createLogicalDevice(uint32_t deviceExtensionCount, const char** deviceExtensions);
         bool createSwapchain(VkImageUsageFlags usage);
-        void deleteSwapchain();
+        void destroySwapchain();
         
 #ifdef EZV_SUPPORT_SDL
         EzV(EzVCreateInfo* cs, SDL_Window* window);
@@ -118,6 +123,9 @@ namespace ezv
         bool querySDLInstanceExtensions(uint32_t* instanceExtensionCount, const char*** instanceExtensions, SDL_Window** window);
 #endif // EZV_SUPPORT_SDL
         
+        bool createRenderPass();
+        void destroyRenderPass();
+
         int createVulkanInstance(EzVCreateInfo* creationStruct);
         void destroyVulkanInstance();
     };

@@ -9,12 +9,12 @@ namespace ezv
         VkLayerProperties* layerProperties = new VkLayerProperties[layerPropertyCount];
         VKA(vkEnumerateInstanceLayerProperties(&layerPropertyCount, layerProperties));
 #ifdef EZV_INFO_OUTPUT
-        lhg::LOG_INFO("-----AVAILABLE LAYERS-----");
+        LOG_INFO("-----AVAILABLE LAYERS-----");
         for (uint32_t i = 0; i < layerPropertyCount; i++)
         {
-            lhg::LOG_INFO(layerProperties[i].layerName, ": ", layerProperties[i].description);
+            LOG_INFO(layerProperties[i].layerName, ": ", layerProperties[i].description);
         }
-        //lhg::LOG_INFO("--------------------------");
+        //LOG_INFO("--------------------------");
 #endif // EZV_INFO_OUTPUT
         delete[] layerProperties;
         
@@ -26,12 +26,12 @@ namespace ezv
         VKA(vkEnumerateInstanceExtensionProperties(0, &availableInstanceExtensionCount, 0));
         VkExtensionProperties* instanceExtensionProperties = new VkExtensionProperties[availableInstanceExtensionCount];
         VKA(vkEnumerateInstanceExtensionProperties(0, &availableInstanceExtensionCount, instanceExtensionProperties));
-        lhg::LOG_INFO("Vulkan Extensions: ");
+        LOG_INFO("Vulkan Extensions: ");
         for (uint32_t i = 0; i < availableInstanceExtensionCount; i++)
         {
-                lhg::LOG_INFO(instanceExtensionProperties[i].extensionName);
+                LOG_INFO(instanceExtensionProperties[i].extensionName);
         }
-        lhg::LOG_EMPTY();
+        LOG_EMPTY();
         delete[] instanceExtensionProperties;*/
         
         VkApplicationInfo applicationInfo = {VK_STRUCTURE_TYPE_APPLICATION_INFO};
@@ -47,29 +47,29 @@ namespace ezv
         createInfo.ppEnabledExtensionNames = instanceExtensions;
         
 #ifdef EZV_INFO_OUTPUT
-        lhg::LOG_INFO("----INSTANCE EXTENSIONS---");
+        LOG_INFO("----INSTANCE EXTENSIONS---");
         for (uint32_t i = 0; i < instanceExtensionCount; i++)
         {
-            lhg::LOG_INFO(instanceExtensions[i]);
+            LOG_INFO(instanceExtensions[i]);
         }
-        //lhg::LOG_INFO("--------------------------");
+        //LOG_INFO("--------------------------");
 #endif // EZV_INFO_OUTPUT
         
 #ifdef EZV_INFO_OUTPUT
-        lhg::LOG_INFO("-------ACTIVE LAYERS------");
+        LOG_INFO("-------ACTIVE LAYERS------");
         for (uint32_t i = 0; i < createInfo.enabledLayerCount; i++)
         {
-            lhg::LOG_INFO(createInfo.ppEnabledLayerNames[i]);
+            LOG_INFO(createInfo.ppEnabledLayerNames[i]);
         }
-        lhg::LOG_INFO("--------------------------");
+        LOG_INFO("--------------------------");
 #endif // EZV_INFO_OUTPUT
         
         if (VK(vkCreateInstance(&createInfo, 0, &context->instance) != VK_SUCCESS))
         {
-            lhg::LOG_ERROR("Error creating vulkan instance");
+            LOG_ERROR("Error creating vulkan instance");
             return false;
         }
-        //lhg::LOG_DEBUG("instance: ", context->instance);
+        //LOG_DEBUG("instance: ", context->instance);
         
         return true;
     }
@@ -80,22 +80,22 @@ namespace ezv
         VKA(vkEnumeratePhysicalDevices(context->instance, &numDevices, 0));
         if(numDevices == 0)
         {
-            lhg::LOG_CRIT("Failed to find GPU's with Vulkan Support!");
+            LOG_CRIT("Failed to find GPU's with Vulkan Support!");
             context->physicalDevice = 0;
         }
         VkPhysicalDevice* physicalDevices = new VkPhysicalDevice[numDevices];
         
         VKA(vkEnumeratePhysicalDevices(context->instance, &numDevices, physicalDevices));
-        lhg::LOG_INFO("Found ", numDevices, " GPU(s): ");
+        LOG_INFO("Found ", numDevices, " GPU(s): ");
         for (uint32_t i = 0; i < numDevices; i++)
         {
             VkPhysicalDeviceProperties properties = {};
             VK(vkGetPhysicalDeviceProperties(physicalDevices[i], &properties));
-            lhg::LOG_INFO("GPU ", i, ": ", properties.deviceName);
+            LOG_INFO("GPU ", i, ": ", properties.deviceName);
         }
         context->physicalDevice = physicalDevices[0];
         VK(vkGetPhysicalDeviceProperties(context->physicalDevice, &context->physicalDeviceProperties));
-        lhg::LOG_INFO_IV("Selected GPU: ", context->physicalDeviceProperties.deviceName);
+        LOG_INFO_IV("Selected GPU: ", context->physicalDeviceProperties.deviceName);
         
         delete[] physicalDevices;
         return true;
@@ -142,7 +142,7 @@ namespace ezv
         delete[] queueFamilies;
         if (vkCreateDevice(context->physicalDevice, &createInfo, 0, &context->logicalDevice))
         {
-            lhg::LOG_ERROR("Failed to create logical device");
+            LOG_ERROR("Failed to create logical device");
             return false;
         }
         
@@ -161,12 +161,9 @@ namespace ezv
     
     EzV::~EzV()
     {
+        destroySwapchain();
         destroyVulkanInstance();
-    }
-    
-    int EzV::initEzV(EzVCreateInfo* cs)
-    {
-        return 0;
+        destroyRenderPass();
     }
     
     int EzV::createVulkanInstance(EzVCreateInfo* creationStruct)
@@ -176,24 +173,24 @@ namespace ezv
         
         if (IS_FLAG_SET(creationStruct->creationFlags, CREATE_VULKAN_INSTANCE) && !initVulkanInstance(creationStruct->instanceExtensionCount, creationStruct->instanceExtensions))
         {
-            lhg::LOG_ERROR("Error whilst creating vulkan instance. aborting");
+            LOG_ERROR("Error whilst creating vulkan instance. aborting");
             return 1;
         }
         
         if (IS_FLAG_SET(creationStruct->creationFlags, FIND_PHYSICAL_DEVICE) && !selectPhysicalDevice())
         {
-            lhg::LOG_ERROR("Error whilst querying for physical device. aborting");
+            LOG_ERROR("Error whilst querying for physical device. aborting");
             return 2;
         }
         
         if (IS_FLAG_SET(creationStruct->creationFlags, GENERATE_LOGICAL_DEVICE) && !createLogicalDevice(creationStruct->deviceExtensionCount, creationStruct->deviceExtensions))
         {
-            lhg::LOG_ERROR("Error whilst creating logical device. aborting");
+            LOG_ERROR("Error whilst creating logical device. aborting");
             return 3;
         }
         
 #ifdef EZV_INFO_OUTPUT
-        lhg::LOG_INFO("Vulkan context created successfully!");
+        LOG_INFO("Vulkan context created successfully!");
 #endif // EZV_INFO_OUTPUT
         
         //createSurface();
@@ -202,16 +199,21 @@ namespace ezv
     
     void EzV::destroyVulkanInstance()
     {
-        deleteSwapchain();
+        if (context)
+        {
         
-        VKA(vkDeviceWaitIdle(context->logicalDevice));
-        VK(vkDestroyDevice(context->logicalDevice, 0));
-        VK(vkDestroyInstance(context->instance, 0));
-        delete context;
-        context = 0;
-        
+            if (context->logicalDevice)
+            {
+                VKA(vkDeviceWaitIdle(context->logicalDevice));
+                VK(vkDestroyDevice(context->logicalDevice, 0));
+            }
+            if (context->instance) VK(vkDestroyInstance(context->instance, 0));
+            delete context;
+            context = 0;
+
 #ifdef EZV_INFO_OUTPUT
-        lhg::LOG_WARN("Vulkan instance destroyed");
+            LOG_WARN("Vulkan instance destroyed successfully!");
 #endif // EZV_INFO_OUTPUT
+        }
     }
 }

@@ -8,7 +8,7 @@ namespace ezv
         VKA(vkGetPhysicalDeviceSurfaceSupportKHR(context->physicalDevice, context->graphicsQueue.familyIndex, swapchain->surface, &supportsPresent));
         if (!supportsPresent)
         {
-            lhg::LOG_ERROR("Graphics Queue does not support present");
+            LOG_ERROR("Graphics Queue does not support present");
             *swapchain = {}; 
             return false;
         }
@@ -19,18 +19,18 @@ namespace ezv
         VKA(vkGetPhysicalDeviceSurfaceFormatsKHR(context->physicalDevice, swapchain->surface, &numFormats, availableFormats));
         if (numFormats <= 0)
         {
-            lhg::LOG_ERROR("No surface formats available. aborting swapchain creation");
+            LOG_ERROR("No surface formats available. aborting swapchain creation");
             delete[] availableFormats;
             return false;
         }
         
 #ifdef EZV_INFO_OUTPUT
-        lhg::LOG_INFO("-----AVAILABLE FORMATS----");
+        LOG_INFO("-----AVAILABLE FORMATS----");
         for (uint32_t i = 0; i < numFormats; i++)
         {
-            lhg::LOG_INFO(availableFormats[i].format);
+            LOG_INFO(availableFormats[i].format);
         }
-        lhg::LOG_INFO("--------------------------");
+        LOG_INFO("--------------------------");
 #endif // EZV_INFO_OUTPUT
         
         // First available format should be sensible (normally not HDR)
@@ -80,7 +80,7 @@ namespace ezv
         return true;
     }
     
-    void EzV::deleteSwapchain()
+    void EzV::destroySwapchain()
     {
         if(swapchain)
         {
@@ -88,6 +88,7 @@ namespace ezv
             if(swapchain->surface)vkDestroySurfaceKHR(context->instance, swapchain->surface, 0);
             delete swapchain;
             swapchain = 0;
+            LOG_WARN("Swapchain destroyed successfully!");
         }
     }
 }

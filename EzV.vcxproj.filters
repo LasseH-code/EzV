@@ -26,10 +26,13 @@
     <ClCompile Include="src\ezv_device.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
-    <ClCompile Include="src\ezv_SDL_support.cpp">
+    <ClCompile Include="src\ezv_support_sdl.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
     <ClCompile Include="src\ezv_swapchain.cpp">
+      <Filter>Quelldateien</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ezv_renderpass.cpp">
       <Filter>Quelldateien</Filter>
     </ClCompile>
   </ItemGroup>
