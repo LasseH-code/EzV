@@ -156,7 +156,7 @@ namespace ezv
     
     EzV::EzV(EzVCreateInfo* creationStruct)
     {
-        *creationStruct->returnVal = createVulkanInstance(creationStruct);
+        *creationStruct->p_returnVal = createVulkanInstance(creationStruct);
     }
     
     EzV::~EzV()
@@ -171,19 +171,19 @@ namespace ezv
         context = new VulkanContext;
         swapchain = new VulkanSwapchain;
         
-        if (IS_FLAG_SET(creationStruct->creationFlags, CREATE_VULKAN_INSTANCE) && !initVulkanInstance(creationStruct->instanceExtensionCount, creationStruct->instanceExtensions))
+        if (IS_FLAG_SET(creationStruct->m_creationFlags, CREATE_VULKAN_INSTANCE) && !initVulkanInstance(creationStruct->m_instanceExtensionCount, creationStruct->p_instanceExtensions))
         {
             LOG_ERROR("Error whilst creating vulkan instance. aborting");
             return 1;
         }
         
-        if (IS_FLAG_SET(creationStruct->creationFlags, FIND_PHYSICAL_DEVICE) && !selectPhysicalDevice())
+        if (IS_FLAG_SET(creationStruct->m_creationFlags, FIND_PHYSICAL_DEVICE) && !selectPhysicalDevice())
         {
             LOG_ERROR("Error whilst querying for physical device. aborting");
             return 2;
         }
         
-        if (IS_FLAG_SET(creationStruct->creationFlags, GENERATE_LOGICAL_DEVICE) && !createLogicalDevice(creationStruct->deviceExtensionCount, creationStruct->deviceExtensions))
+        if (IS_FLAG_SET(creationStruct->m_creationFlags, GENERATE_LOGICAL_DEVICE) && !createLogicalDevice(creationStruct->m_deviceExtensionCount, creationStruct->p_deviceExtensions))
         {
             LOG_ERROR("Error whilst creating logical device. aborting");
             return 3;

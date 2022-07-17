@@ -4,7 +4,7 @@ namespace ezv
 {
     EzV::EzV(EzVCreateInfo* cs, SDL_Window* window)
     {
-        DWORD* flags = &cs->creationFlags;
+        DWORD* flags = &cs->m_creationFlags;
         
         Uint32 sdl_inits = 0;
         if (IS_FLAG_SET(*flags, INIT_VIDEO_SDL)) sdl_inits |= SDL_INIT_VIDEO;
@@ -18,7 +18,7 @@ namespace ezv
         if (sdl_inits != 0) LOG_INFO("SDL initialized successfully!");
 #endif // EZV_INFO_OUTPUT
         
-        if (IS_FLAG_SET(*flags, CREATE_WINDOW_SDL) && !createSDLWindow(cs->sdlWindowCS, &window))
+        if (IS_FLAG_SET(*flags, CREATE_WINDOW_SDL) && !createSDLWindow(cs->p_sdlWindowCS, &window))
         {
             LOG_ERROR("An error occured whilst creating a SDL window. aborting");
             return;
@@ -36,7 +36,7 @@ namespace ezv
         if (IS_FLAG_SET(*flags, QUERY_INSTANCE_EXTENSIONS_SDL)) LOG_INFO("Query for InstanceExtensions successful!");
 #endif // EZV_INFO_OUTPUT
         
-        *cs->returnVal = createVulkanInstance(cs);
+        *cs->p_returnVal = createVulkanInstance(cs);
         
         
         if (IS_FLAG_SET(*flags, CREATE_SURFACE_KHR_SDL) && !createSurfaceSDL(&window))
@@ -49,7 +49,7 @@ namespace ezv
         if (IS_FLAG_SET(*flags, CREATE_SURFACE_KHR_SDL)) LOG_INFO("Surface created successfully!");
 #endif // EZV_INFO_OUTPUT
         
-        if (IS_FLAG_SET(*flags, CREATE_SWAPCHAIN_KHR) && !createSwapchain(cs->usageFlags))
+        if (IS_FLAG_SET(*flags, CREATE_SWAPCHAIN_KHR) && !createSwapchain(cs->m_usageFlags))
         {
             LOG_ERROR("Couldn't establish swapchain. aborting swapchain creation");
             destroySwapchain();
@@ -90,7 +90,7 @@ namespace ezv
             LOG_ERROR("Error whilst querying for Instance Extensions. continuing");
             return false;
         }
-        return (querySDLInstanceExtensions(&cs->instanceExtensionCount, &cs->instanceExtensions, window));
+        return (querySDLInstanceExtensions(&cs->m_instanceExtensionCount, &cs->p_instanceExtensions, window));
     }
     
     bool EzV::querySDLInstanceExtensions(uint32_t* instanceExtensionCount, const char*** instanceExtensions,  SDL_Window** window)

@@ -29,18 +29,23 @@
 
 namespace ezv
 {
-    static const DWORD CREATE_VULKAN_INSTANCE =        0b1<<0;
-    static const DWORD FIND_PHYSICAL_DEVICE =          0b1<<1;
-    static const DWORD GENERATE_LOGICAL_DEVICE =       0b1<<2;
-    static const DWORD SAVE_GRAPHICS_QUEUE =           0b1<<3; 
-    static const DWORD GENERATE_VULKAN_CONTEXT = CREATE_VULKAN_INSTANCE | FIND_PHYSICAL_DEVICE | GENERATE_LOGICAL_DEVICE | SAVE_GRAPHICS_QUEUE;
-    
-    static const DWORD CREATE_WINDOW_SDL =             0b1<<4;
-    static const DWORD CREATE_SWAPCHAIN_KHR =          0b1<<5;
-    static const DWORD CREATE_SURFACE_KHR_SDL =        0b1<<6;
-    static const DWORD QUERY_INSTANCE_EXTENSIONS_SDL = 0b1<<7;
-    static const DWORD INIT_VIDEO_SDL =                0b1<<8;
-    static const DWORD SETUP_VIA_SDL = CREATE_WINDOW_SDL | CREATE_SWAPCHAIN_KHR | CREATE_SURFACE_KHR_SDL | QUERY_INSTANCE_EXTENSIONS_SDL | INIT_VIDEO_SDL;
+    typedef enum EZV_CREATE_FLAGS : DWORD
+    {
+        CREATE_VULKAN_INSTANCE = 0b1 << 0,
+        FIND_PHYSICAL_DEVICE = 0b1 << 1,
+        GENERATE_LOGICAL_DEVICE = 0b1 << 2,
+        SAVE_GRAPHICS_QUEUE = 0b1 << 3,
+        GENERATE_VULKAN_CONTEXT = CREATE_VULKAN_INSTANCE | FIND_PHYSICAL_DEVICE | GENERATE_LOGICAL_DEVICE | SAVE_GRAPHICS_QUEUE,
+
+        CREATE_WINDOW_SDL = 0b1 << 4,
+        CREATE_SWAPCHAIN_KHR = 0b1 << 5,
+        CREATE_SURFACE_KHR_SDL = 0b1 << 6,
+        QUERY_INSTANCE_EXTENSIONS_SDL = 0b1 << 7,
+        INIT_VIDEO_SDL = 0b1 << 8,
+        SETUP_VIA_SDL = CREATE_WINDOW_SDL | CREATE_SWAPCHAIN_KHR | CREATE_SURFACE_KHR_SDL | QUERY_INSTANCE_EXTENSIONS_SDL | INIT_VIDEO_SDL,
+
+        ADD_BASIC_RENDER_PASS = 0b1 << 9,
+    } EZV_CREATE_FLAGS;
     
     struct EzVSDLWindowCreateInfo
     {
@@ -51,21 +56,66 @@ namespace ezv
         int h;
         uint32_t windowFlags;
     };
-    
+
+    typedef enum RenderSubPassSamples : DWORD // So to speak Antialiasing sample count
+    {
+        RENDER_SUB_PASS_SAMPLE_COUNT_1 = 0b1 << 0,
+        RENDER_SUB_PASS_SAMPLE_COUNT_2 = 0b1 << 1,
+        RENDER_SUB_PASS_SAMPLE_COUNT_4 = 0b1 << 2,
+        RENDER_SUB_PASS_SAMPLE_COUNT_8 = 0b1 << 3,
+        RENDER_SUB_PASS_SAMPLE_COUNT_16 = 0b1 << 4,
+        RENDER_SUB_PASS_SAMPLE_COUNT_32 = 0b1 << 5,
+        RENDER_SUB_PASS_SAMPLE_COUNT_64 = 0b1 << 6,
+    } RenderPassSamples;
+
+    typedef enum RenderSubPassTypes : DWORD
+    {
+        RENDER_SUB_PASS_TYPE_COLOR_CUSTOM = 0b1 << 0, // Loads VkSubpassDescription passed into it
+        RENDER_SUB_PASS_TYPE_COLOR_LOAD = 0b1 << 1, // Loads Buffer
+        RENDER_SUB_PASS_TYPE_COLOR_NORMAL = 0b1 << 2, // Overwrites Buffer
+        RENDER_SUB_PASS_TYPE_COLOR_CLEAR = 0b1 << 3, // Clears Buffer
+    } RenderSubPassTypes;
+
+    typedef enum RenderPassTypes : DWORD
+    {
+        RENDER_PASS_TYPE_COLOR_CUSTOM = 0b1 << 0,
+        RENDER_PASS_TYPE_COLOR_LOAD = 0b1 << 1,
+        RENDER_PASS_TYPE_COLOR_NORMAL = 0b1 << 2,
+        RENDER_PASS_TYPE_COLOR_CLEAR = 0b1 << 3,
+    } RenderPassTypes;
+
+    struct EzVSubRenderPassCreateInfo
+    {
+        DWORD m_subRenderPassCreateInfo;
+        VkSubpassDescription* p_customSubRenderPassDescription;
+
+        DWORD m_samples;
+    };
+
+    struct EzVRenderPassCreateInfo
+    {
+        DWORD m_renderPassType;
+        DWORD m_samples;
+        EzVSubRenderPassCreateInfo** p_customSubRenderPasses;
+    };
+
     struct EzVCreateInfo
     {
-        DWORD creationFlags;
-        VkImageUsageFlags usageFlags;
-        int* returnVal;
+        DWORD m_creationFlags;
+        VkImageUsageFlags m_usageFlags;
+        int* p_returnVal;
         
-        uint32_t instanceExtensionCount;
-        const char** instanceExtensions; 
+        uint32_t m_instanceExtensionCount;
+        const char** p_instanceExtensions; 
         
-        uint32_t deviceExtensionCount; 
-        const char** deviceExtensions;
+        uint32_t m_deviceExtensionCount; 
+        const char** p_deviceExtensions;
         
+        uint32_t m_renderPassCount;
+        EzVRenderPassCreateInfo** p_renderPasses;
+
         //void* createSurface; 
-        EzVSDLWindowCreateInfo* sdlWindowCS;
+        EzVSDLWindowCreateInfo* p_sdlWindowCS;
     };
     
     struct VulkanQueue
