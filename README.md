@@ -23,13 +23,13 @@ There are 3 Preprocessordefinitions to be aware of.
 2. LHG_VERBOSE (to make the logger display INFO logs -> required for EZV_INFO_OUTPUT)
 3. EZV_SUPPORT_SDL (activates the SDL integration in EzV)
 # FAQ
-## Will more options, like choosing a specific GPU, be added in the future?
+**Will more options, like choosing a specific GPU, be added in the future?**  
 Yes, they will be added... at some point. It is not my top priority right now. If there is demand though, I'll do it.
-## Is EzV a good way to use vulkan in bigger projects?
+**Is EzV a good way to use vulkan in bigger projects?**  
 No, not right now. The options EzV gives you are to restrictive at the moment for it to be a good choice. You could work aroung that, but for now I'd recommend using something else or writing your own. In the future I hope this will be possible though.
-## Will there be releases in the form of Libraries?
+**Will there be releases in the form of Libraries?**  
 Likely at some point. The project is too early on for that to make sense. For now just use the source files there ain't all to many.
-## Will more documentation be a thing?
+**Will more documentation be a thing?**  
 Yes, definitely. There are just things constantly changing right now because of the early state of the library. When things are more set in stone, more documentation will arrive.
-## What does EzV mean?
+**What does EzV mean?**  
 Easy(Ez) Vulkan(V)
