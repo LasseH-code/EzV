@@ -4,7 +4,7 @@ namespace ezv
 {
 	bool EzV::createRenderPass()
 	{
-		renderpass = new VulkanRenderpass();
+		VulkanRenderpass* temp = new VulkanRenderpass();
 
 		VkAttachmentDescription attachmentDescription = {};
 		attachmentDescription.format = swapchain->format; 
@@ -25,16 +25,22 @@ namespace ezv
 		createInfo.pAttachments = &attachmentDescription;
 		createInfo.subpassCount = 1;
 		createInfo.pSubpasses = &subpass;
-		VKA(vkCreateRenderPass(context->logicalDevice, &createInfo, 0, &renderpass->renderpass));
+		VKA(vkCreateRenderPass(context->logicalDevice, &createInfo, 0, &temp->renderpass));
+		renderpasses.push_back(*temp);
+		temp = 0;
 		return true;
 	}
 
 	void EzV::destroyRenderPass()
 	{
-		if (renderpass && renderpass->renderpass)
+		//VulkanRenderpass& temp = renderpasses.data();
+		if (renderpasses.size() > 0)
 		{
-			VK(vkDestroyRenderPass(context->logicalDevice, renderpass->renderpass, 0));
-			renderpass = 0;
+			while (renderpasses.size() > 0)
+			{
+				VK(vkDestroyRenderPass(context->logicalDevice, renderpasses.back().renderpass, 0));
+				renderpasses.pop_back();
+			}
 			LOG_WARN("Renderpass destroyed successfully!");
 		}
 	}

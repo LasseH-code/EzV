@@ -102,7 +102,7 @@ namespace ezv
         public:
         VulkanContext* context = 0;
         VulkanSwapchain* swapchain = 0;
-        VulkanRenderpass* renderpass = 0;
+        std::vector<VulkanRenderpass> renderpasses;
         
         public:
         EzV(EzVCreateInfo* creationStruct);
