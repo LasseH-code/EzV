@@ -57,31 +57,32 @@ namespace ezv
         uint32_t windowFlags;
     };
 
-    typedef enum RenderSubPassSamples : DWORD // So to speak Antialiasing sample count
+    typedef enum RenderSubPassSamples
     {
-        RENDER_SUB_PASS_SAMPLE_COUNT_1 = 0b1 << 0,
-        RENDER_SUB_PASS_SAMPLE_COUNT_2 = 0b1 << 1,
-        RENDER_SUB_PASS_SAMPLE_COUNT_4 = 0b1 << 2,
-        RENDER_SUB_PASS_SAMPLE_COUNT_8 = 0b1 << 3,
-        RENDER_SUB_PASS_SAMPLE_COUNT_16 = 0b1 << 4,
-        RENDER_SUB_PASS_SAMPLE_COUNT_32 = 0b1 << 5,
-        RENDER_SUB_PASS_SAMPLE_COUNT_64 = 0b1 << 6,
+        RENDER_SUB_PASS_SAMPLE_COUNT_1 = VK_SAMPLE_COUNT_1_BIT,
+        RENDER_SUB_PASS_SAMPLE_COUNT_2 = VK_SAMPLE_COUNT_2_BIT,
+        RENDER_SUB_PASS_SAMPLE_COUNT_4 = VK_SAMPLE_COUNT_4_BIT,
+        RENDER_SUB_PASS_SAMPLE_COUNT_8 = VK_SAMPLE_COUNT_8_BIT,
+        RENDER_SUB_PASS_SAMPLE_COUNT_16 = VK_SAMPLE_COUNT_16_BIT,
+        RENDER_SUB_PASS_SAMPLE_COUNT_32 = VK_SAMPLE_COUNT_32_BIT,
+        RENDER_SUB_PASS_SAMPLE_COUNT_64 = VK_SAMPLE_COUNT_64_BIT,
     } RenderPassSamples;
 
-    typedef enum RenderSubPassTypes : DWORD
+    typedef enum RenderSubPassTypes
     {
-        RENDER_SUB_PASS_TYPE_COLOR_CUSTOM = 0b1 << 0, // Loads VkSubpassDescription passed into it
-        RENDER_SUB_PASS_TYPE_COLOR_LOAD = 0b1 << 1, // Loads Buffer
-        RENDER_SUB_PASS_TYPE_COLOR_NORMAL = 0b1 << 2, // Overwrites Buffer
-        RENDER_SUB_PASS_TYPE_COLOR_CLEAR = 0b1 << 3, // Clears Buffer
+        RENDER_SUB_PASS_TYPE_COLOR_CUSTOM, // Loads VkSubpassDescription passed into it
+        RENDER_SUB_PASS_TYPE_COLOR_LOAD, // Loads Buffer
+        RENDER_SUB_PASS_TYPE_COLOR_NORMAL, // Overwrites Buffer
+        RENDER_SUB_PASS_TYPE_COLOR_CLEAR, // Clears Buffer
     } RenderSubPassTypes;
 
-    typedef enum RenderPassTypes : DWORD
+    typedef enum RenderPassTypes
     {
-        RENDER_PASS_TYPE_COLOR_CUSTOM = 0b1 << 0,
-        RENDER_PASS_TYPE_COLOR_LOAD = 0b1 << 1,
-        RENDER_PASS_TYPE_COLOR_NORMAL = 0b1 << 2,
-        RENDER_PASS_TYPE_COLOR_CLEAR = 0b1 << 3,
+        RENDER_PASS_TYPE_CUSTOM,
+        RENDER_PASS_TYPE_COLOR_LOAD,
+        RENDER_PASS_TYPE_COLOR_NORMAL,
+        RENDER_PASS_TYPE_COLOR_CLEAR,
+        RENDER_PASS_TYPE_CUSTOM_SUBPASSES,
     } RenderPassTypes;
 
     struct EzVSubRenderPassCreateInfo
@@ -94,8 +95,9 @@ namespace ezv
 
     struct EzVRenderPassCreateInfo
     {
-        DWORD m_renderPassType;
-        DWORD m_samples;
+        RenderPassTypes m_renderPassType;
+        VkRenderPass* p_customRenderPass;
+        RenderSubPassSamples m_samples;
         EzVSubRenderPassCreateInfo** p_customSubRenderPasses;
     };
 
@@ -126,7 +128,7 @@ namespace ezv
     
     struct VulkanRenderpass
     {
-        VkRenderPass renderpass;
+        VkRenderPass m_renderpass;
     };
 
     struct VulkanSwapchain {
@@ -173,8 +175,8 @@ namespace ezv
         bool querySDLInstanceExtensions(uint32_t* instanceExtensionCount, const char*** instanceExtensions, SDL_Window** window);
 #endif // EZV_SUPPORT_SDL
         
-        bool createRenderPass();
-        void destroyRenderPass();
+        bool createRenderPass(EzVRenderPassCreateInfo* createInfo);
+        void destroyRenderPasses();
 
         int createVulkanInstance(EzVCreateInfo* creationStruct);
         void destroyVulkanInstance();

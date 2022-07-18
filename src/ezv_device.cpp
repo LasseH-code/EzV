@@ -163,7 +163,7 @@ namespace ezv
     {
         destroySwapchain();
         destroyVulkanInstance();
-        destroyRenderPass();
+        destroyRenderPasses();
     }
     
     int EzV::createVulkanInstance(EzVCreateInfo* creationStruct)
